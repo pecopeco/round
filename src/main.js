@@ -23,7 +23,8 @@ app.$mount()
 export default {
   config: {
     pages: [
-      'pages/home/index'
+      'pages/round/index',
+      'pages/line/index'
     ],
     window: {
       navigationStyle: 'custom',
@@ -33,17 +34,18 @@ export default {
       navigationBarTextStyle: 'white'
     },
     tabBar: {
-      custom: true,
+      color: '#333',
+      selectedColor: '#007d37',
       list: [
         {
-          pagePath: 'pages/home/index',
-          text: 'home',
+          pagePath: 'pages/round/index',
+          text: 'round',
           iconPath: 'native/tabbar/home.png',
           selectedIconPath: 'native/tabbar/home_on.png'
         },
         {
-          pagePath: 'pages/home/index',
-          text: 'home',
+          pagePath: 'pages/line/index',
+          text: 'line',
           iconPath: 'native/tabbar/home.png',
           selectedIconPath: 'native/tabbar/home_on.png'
         }

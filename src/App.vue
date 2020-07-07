@@ -73,9 +73,6 @@ page {
     background #fff
   }
 }
-.main-wrap {
-  padding-top 65px
-}
 image {
   width 100%
   height 100%
