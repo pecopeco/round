@@ -16,7 +16,7 @@
           span chair
         .item.bold
           span door
-      canvas.canvas(type="2d" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd")
+      canvas.canvas(type="2d" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd" :style="{width: canvasWidth + 'px', height: canvasHeight + 'px'}")
     .sub-wrap
       .tool-wrap
         .back-btn(v-if="isEnd && $route.query.fromPage == 'reviewList'" @click="goBack(2)") 返回列表
@@ -70,6 +70,8 @@ export default {
       showBtn: false,
       loading: false,
       canvas: '',
+      canvasWidth: 375,
+      canvasHeight: 260,
       startSite: '',
       lineResult: [null, null, null]
     }
@@ -123,14 +125,14 @@ export default {
       } else {
         this.startSite = ''
       }
-      this.canvas.moveTo(siteX - (siteX / 8), e.touches[0].y - (e.touches[0].y / 4))
+      this.canvas.moveTo(this.transX(siteX), this.transY(siteY))
     },
     touchMove (e) {
       if (this.startSite && this.lineResult[this.startSite - 1] !== null) {
         return
       }
-      let trueSiteX = e.touches[0].x - (e.touches[0].x / 8)
-      let trueSiteY = e.touches[0].y - (e.touches[0].y / 4)
+      let trueSiteX = this.transX(e.touches[0].x)
+      let trueSiteY = this.transY(e.touches[0].y)
       this.canvas.lineTo(trueSiteX, trueSiteY)
       this.canvas.stroke()
       this.canvas.moveTo(trueSiteX, trueSiteY)
@@ -152,6 +154,12 @@ export default {
         console.log('连线3：', this.lineResult[2])
       }
       this.startSite = ''
+    },
+    transX (x) {
+      return x - (x / (2000 / this.canvasWidth))
+    },
+    transY (y) {
+      return y - (y / (600 / this.canvasHeight))
     }
   },
   mounted () {
@@ -178,9 +186,8 @@ export default {
   width 100%
   .main-wrap {
     position relative
-    width 345px
-    height 200px
-    margin 80px 15px 0
+    margin-top 50px
+    padding 30px 15px
     .img-list {
       display flex
       .item {
@@ -217,8 +224,6 @@ export default {
       position absolute
       top 0
       left 0
-      width 100%
-      height 100%
     }
   }
   .sub-wrap {
