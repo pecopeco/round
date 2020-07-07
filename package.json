@@ -1,0 +1,46 @@
+{
+  "name": "megalo-start",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "megalo-cli-service serve",
+    "build": "megalo-cli-service build",
+    "build:alipay": "megalo-cli-service build --platform alipay",
+    "build:swan": "megalo-cli-service build --platform swan",
+    "build:toutiao": "megalo-cli-service build --platform toutiao",
+    "dev:alipay": "megalo-cli-service serve --platform alipay",
+    "dev:swan": "megalo-cli-service serve --platform swan",
+    "dev:toutiao": "megalo-cli-service serve --platform toutiao",
+    "lint": "megalo-cli-service lint"
+  },
+  "license": "ISC",
+  "babel": {
+    "presets": [
+      "@megalo/app"
+    ]
+  },
+  "devDependencies": {
+    "@megalo/babel-preset-app": "latest",
+    "@megalo/cli-plugin-eslint": "latest",
+    "@megalo/cli-plugin-flx-es6-to-es5": "^1.0.0-beta.2",
+    "@megalo/cli-service": "latest",
+    "@megalo/eslint-config-standard": "latest",
+    "@megalo/target": "latest",
+    "@megalo/template-compiler": "latest",
+    "eslint": "^5.15.3",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2"
+  },
+  "dependencies": {
+    "@megalo/api": "^0.5.7",
+    "@megalo/vhtml-plugin": "latest",
+    "flyio": "^0.6.14",
+    "megalo": "latest",
+    "megalo-router-patch": "^0.1.5",
+    "octoparse": "^0.4.2",
+    "pug": "^2.0.4",
+    "pug-plain-loader": "^1.0.0",
+    "style-resources-loader": "^1.2.1",
+    "vuex": "^3.1.0"
+  }
+}
