@@ -17,22 +17,6 @@
         .item.bold
           span door
       canvas.canvas(type="2d" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd" :style="{width: canvasWidth + 'px', height: canvasHeight + 'px'}")
-    .sub-wrap
-      .tool-wrap
-        .back-btn(v-if="isEnd && $route.query.fromPage == 'reviewList'" @click="goBack(2)") 返回列表
-        .toolbar(v-else)
-          .left
-            image(v-if="$route.query.fromPage == 'reviewList' && checkIndex != 0" @click="$emit('last')" mode="widthFix" src="http://media.talkdoo.com/appletstudent/review/chevron_left.svg")
-          .center
-          .next-btn
-            image(v-if="(fromPage == 'classDetail' && data.score >= 0 && data.score !== '') || $route.query.fromPage == 'reviewList'" mode="widthFix" src="http://media.talkdoo.com/appletstudent/review/next_btn.svg" @click="$emit('next')")
-      .sub-btn
-        button(
-          v-if="data && fromPage == 'test' && showBtn"
-          @click="checkAnswer"
-          :loading="loading"
-          :type="data.score !== '' && data.score < 60 ? 'warn' : 'primary'"
-        ) {{data | btnText}}
 </template>
 
 <script>
@@ -40,76 +24,13 @@
 export default {
   components: {
   },
-  props: {
-    data: {
-      type: Array,
-      default: () => []
-    },
-    isEnd: {
-      type: Boolean,
-      default: false
-    },
-    checkIndex: {
-      type: Number,
-      default: 0
-    },
-    showStage: {
-      type: Boolean,
-      default: false
-    },
-    countdown: {
-      type: Number,
-      default: 20
-    }
-  },
   data () {
     return {
-      fromPage: this.$route.query.fromPage,
-      transData: this,
-      tipsAudioCtx: '',
-      showBtn: false,
-      loading: false,
       canvas: '',
       canvasWidth: 375,
       canvasHeight: 260,
       startSite: '',
       lineResult: [null, null, null]
-    }
-  },
-  watch: {
-    checkIndex () {
-      // 题型不变，重置状态
-      this.transData = this
-      this.showBtn = false
-      this.loading = false
-      this.canvas = ''
-      this.startSite = ''
-      if (!this.showStage) {
-        this.$emit('countdown')
-      }
-    },
-    showStage () {
-      // 页面显示
-      if (!this.showStage) {
-        this.$emit('countdown')
-      }
-    },
-    countdown () {
-      if (this.countdown == 0) {
-        this.showBtn = true
-        this.checkAnswer()
-      }
-    }
-  },
-  filters: {
-    btnText (data) {
-      if (data.score === '') {
-        return 'Submit'
-      } else if (data.score < 60) {
-        return 'Error'
-      } else {
-        return 'Correct'
-      }
     }
   },
   methods: {
@@ -163,8 +84,6 @@ export default {
     }
   },
   mounted () {
-    // 提示音播放器
-    this.tipsAudioCtx = Megalo.createInnerAudioContext()
     setTimeout(() => {
       const query = wx.createSelectorQuery()
       query.select('.canvas').node().exec((res) => {
@@ -224,62 +143,6 @@ export default {
       position absolute
       top 0
       left 0
-    }
-  }
-  .sub-wrap {
-    position absolute
-    left 0
-    bottom 0
-    width 100%
-    .tool-wrap {
-      display flex
-      align-items center
-      justify-content center
-      .back-btn {
-        display flex
-        align-items center
-        justify-content center
-        width 90%
-        height 40px
-        border-radius 20px
-        background theme
-        color #fff
-      }
-      .toolbar {
-        width 100%
-        display flex
-        justify-content space-between
-        .left {
-          display flex
-          align-items center
-          justify-content center
-          width 98px
-          image {
-            width 50px
-            height 50px
-          }
-        }
-        .next-btn {
-          display flex
-          align-items center
-          justify-content center
-          width 98px
-          image {
-            width 50px
-            height 50px
-          }
-        }
-      }
-    }
-    .sub-btn {
-      width 100%
-      height 50px
-      margin-top 30px
-      button {
-        width 100%
-        height 100%
-        border-radius 0
-      }
     }
   }
 }
