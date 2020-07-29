@@ -71,7 +71,7 @@ export default {
         this.lineResult[1] = siteX <= 230 && siteX > 115 && siteY >= 140
         console.log('连线2：', this.lineResult[1])
       } else if (this.startSite === 3) {
-        this.lineResult[2] = siteX <= 345 && siteY >= 140
+        this.lineResult[2] = siteX > 230 && siteX <= 345 && siteY >= 140
         console.log('连线3：', this.lineResult[2])
       }
       this.startSite = ''
