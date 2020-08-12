@@ -16,7 +16,7 @@
           span chair
         .item.bold
           span door
-      canvas.canvas(type="2d" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd" :style="{width: canvasWidth + 'px', height: canvasHeight + 'px'}")
+      canvas#canvas(type="2d" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd" :style="{width: canvasWidth + 'px', height: canvasHeight + 'px'}")
 </template>
 
 <script>
@@ -30,6 +30,7 @@ export default {
       canvasWidth: 375,
       canvasHeight: 260,
       startSite: '',
+      dpr: wx.getSystemInfoSync().pixelRatio,
       lineResult: [null, null, null]
     }
   },
@@ -46,55 +47,59 @@ export default {
       } else {
         this.startSite = ''
       }
-      this.canvas.moveTo(this.transX(siteX), this.transY(siteY))
+      this.canvas.beginPath()
+      this.canvas.lineCap = 'round'
+      this.canvas.strokeStyle = 'green'
+      this.canvas.lineWidth = 6
+      this.canvas.moveTo(siteX * this.dpr, siteY * this.dpr)
     },
     touchMove (e) {
-      if (this.startSite && this.lineResult[this.startSite - 1] !== null) {
+      if (!this.startSite || (this.startSite && this.lineResult[this.startSite - 1] !== null)) {
         return
       }
-      let trueSiteX = this.transX(e.touches[0].x)
-      let trueSiteY = this.transY(e.touches[0].y)
-      this.canvas.lineTo(trueSiteX, trueSiteY)
+      this.canvas.lineTo(e.touches[0].x * this.dpr, e.touches[0].y * this.dpr)
       this.canvas.stroke()
-      this.canvas.moveTo(trueSiteX, trueSiteY)
+      this.canvas.moveTo(e.touches[0].x * this.dpr, e.touches[0].y * this.dpr)
     },
     touchEnd (e) {
-      if (this.startSite && this.lineResult[this.startSite - 1] !== null) {
+      if (!this.startSite || (this.startSite && this.lineResult[this.startSite - 1] !== null)) {
         return
       }
       let siteX = e.changedTouches[0].x
       let siteY = e.changedTouches[0].y
       if (this.startSite === 1) {
-        this.lineResult[0] = siteX <= 115 && siteY >= 140
+        this.lineResult[0] = this.countResult(resultIndex, e.changedTouches[0].x, e.changedTouches[0].y)
         console.log('连线1：', this.lineResult[0])
       } else if (this.startSite === 2) {
-        this.lineResult[1] = siteX <= 230 && siteX > 115 && siteY >= 140
+        this.lineResult[1] = this.countResult(resultIndex, e.changedTouches[0].x, e.changedTouches[0].y)
         console.log('连线2：', this.lineResult[1])
       } else if (this.startSite === 3) {
-        this.lineResult[2] = siteX > 230 && siteX <= 345 && siteY >= 140
+        this.lineResult[2] = this.countResult(resultIndex, e.changedTouches[0].x, e.changedTouches[0].y)
         console.log('连线3：', this.lineResult[2])
       }
       this.startSite = ''
     },
-    transX (x) {
-      return x - (x / (2000 / this.canvasWidth))
-    },
-    transY (y) {
-      return y - (y / (600 / this.canvasHeight))
+    countResult (key, siteX, siteY) {
+      if (key === 0) {
+        return siteX <= 115 && siteY >= 140
+      } else if (key === 1) {
+        return siteX <= 230 && siteX > 115 && siteY >= 140
+      } else if (key === 2) {
+        return siteX > 230 && siteX <= 345 && siteY >= 140
+      }
     }
   },
   mounted () {
     setTimeout(() => {
-      const query = wx.createSelectorQuery()
-      query.select('.canvas').node().exec((res) => {
-        const canvas = res[0].node
-        this.canvas = canvas.getContext('2d')
-        this.canvas.beginPath()
-        this.canvas.lineCap = 'round'
-        this.canvas.strokeStyle = 'green'
-        this.canvas.lineWidth = 4
-      })
-    }, 1000)
+      wx.createSelectorQuery().select('#canvas')
+        .fields({ node: true, size: true })
+        .exec((res) => {
+          const canvas = res[0].node
+          canvas.width = res[0].width * this.dpr
+          canvas.height = res[0].height * this.dpr
+          this.canvas = canvas.getContext('2d')
+        })
+    }, 1500)
   }
 }
 </script>
@@ -139,7 +144,7 @@ export default {
         }
       }
     }
-    .canvas {
+    #canvas {
       position absolute
       top 0
       left 0
