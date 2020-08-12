@@ -1,7 +1,7 @@
 <template lang="pug">
   .link-line
     navigation(title="连线" :hideLeft="true")
-    .main-wrap
+    .main-wrap(:style="{height: canvasHeight + 'px'}")
       .img-list
         .item
           image(mode="widthFix" src="/static/images/turnplate-bg.png")
@@ -16,7 +16,7 @@
           span chair
         .item.bold
           span door
-      canvas#canvas(type="2d" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd" :style="{width: canvasWidth + 'px', height: canvasHeight + 'px'}")
+      canvas.canvas(type="2d" @touchstart="touchStart" @touchmove="touchMove" @touchend="touchEnd" :style="{width: canvasWidth + 'px', height: canvasHeight + 'px'}")
 </template>
 
 <script>
@@ -27,10 +27,9 @@ export default {
   data () {
     return {
       canvas: '',
-      canvasWidth: 375,
+      canvasWidth: wx.getSystemInfoSync().screenWidth,
       canvasHeight: 260,
       startSite: '',
-      dpr: wx.getSystemInfoSync().pixelRatio,
       lineResult: [null, null, null]
     }
   },
@@ -51,15 +50,15 @@ export default {
       this.canvas.lineCap = 'round'
       this.canvas.strokeStyle = 'green'
       this.canvas.lineWidth = 6
-      this.canvas.moveTo(siteX * this.dpr, siteY * this.dpr)
+      this.canvas.moveTo(siteX, siteY)
     },
     touchMove (e) {
       if (!this.startSite || (this.startSite && this.lineResult[this.startSite - 1] !== null)) {
         return
       }
-      this.canvas.lineTo(e.touches[0].x * this.dpr, e.touches[0].y * this.dpr)
+      this.canvas.lineTo(e.touches[0].x, e.touches[0].y)
       this.canvas.stroke()
-      this.canvas.moveTo(e.touches[0].x * this.dpr, e.touches[0].y * this.dpr)
+      this.canvas.moveTo(e.touches[0].x, e.touches[0].y)
     },
     touchEnd (e) {
       if (!this.startSite || (this.startSite && this.lineResult[this.startSite - 1] !== null)) {
@@ -91,13 +90,14 @@ export default {
   },
   mounted () {
     setTimeout(() => {
-      wx.createSelectorQuery().select('#canvas')
+      wx.createSelectorQuery().select('.canvas')
         .fields({ node: true, size: true })
         .exec((res) => {
           const canvas = res[0].node
-          canvas.width = res[0].width * this.dpr
-          canvas.height = res[0].height * this.dpr
+          canvas.width = this.canvasWidth * wx.getSystemInfoSync().pixelRatio
+          canvas.height = this.canvasHeight * wx.getSystemInfoSync().pixelRatio
           this.canvas = canvas.getContext('2d')
+          this.canvas.scale(wx.getSystemInfoSync().pixelRatio, wx.getSystemInfoSync().pixelRatio)
         })
     }, 1500)
   }
@@ -110,8 +110,7 @@ export default {
   width 100%
   .main-wrap {
     position relative
-    margin-top 50px
-    padding 30px 15px
+    margin 80px 0 15px
     .img-list {
       display flex
       .item {
@@ -144,7 +143,7 @@ export default {
         }
       }
     }
-    #canvas {
+    .canvas {
       position absolute
       top 0
       left 0
